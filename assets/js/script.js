@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Load photos from JSON file
 async function loadGalleryPhotos() {
   try {
-    const response = await fetch("/assets/json/gallery.json");
+    const response = await fetch("./assets/json/gallery.json");
 
     if (!response.ok) {
       // Fallback if fetch fails - show placeholder message
