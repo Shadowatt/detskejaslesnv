@@ -12,10 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
   setupPreviewModal();
 });
 
-// Load photos from server
+// Load photos from JSON file
 async function loadGalleryPhotos() {
   try {
-    const response = await fetch("./assets/images/gallery");
+    const response = await fetch("assets/json/gallery.json");
 
     if (!response.ok) {
       // Fallback if fetch fails - show placeholder message
@@ -25,17 +25,13 @@ async function loadGalleryPhotos() {
       return;
     }
 
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    const links = Array.from(doc.querySelectorAll('a[href$=".jpg"], a[href$=".png"], a[href$=".jpeg"]'));
+    const photosData = await response.json();
 
-    allPhotos = links.map((link) => {
-      const href = link.getAttribute("href");
-      const filename = decodeURIComponent(href.split("/").pop());
+    allPhotos = photosData.map((item) => {
+      const filename = item.path.split("/").pop();
       const tag = filename.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
       return {
-        src: `../assets/images/gallery/${filename}`,
+        src: item.path,
         tag: tag,
         filename: filename,
       };
@@ -51,7 +47,7 @@ async function loadGalleryPhotos() {
     renderGalleryPage(1);
     updatePaginationButtons();
   } catch (error) {
-    console.log("Gallery folder not accessible - using placeholder mode");
+    console.log("Gallery JSON not accessible - using placeholder mode");
     const container = document.getElementById("fotogallery-con");
     container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-8">Fotografie budú doplnené neskôr</p>';
   }
