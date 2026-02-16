@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Load photos from server
 async function loadGalleryPhotos() {
   try {
-    const response = await fetch("../assets/images/gallery");
+    const response = await fetch("./assets/images/gallery");
 
     if (!response.ok) {
       // Fallback if fetch fails - show placeholder message
