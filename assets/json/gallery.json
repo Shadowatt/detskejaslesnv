@@ -1,10 +1,20 @@
 [
   { "path": "assets/images/gallery/dvor.jpeg" },
-  { "path": "assets/images/gallery/dvor 2.jpeg" },
   { "path": "assets/images/gallery/hlavna-budova.jpeg" },
   { "path": "assets/images/gallery/hracky.jpeg" },
   { "path": "assets/images/gallery/karneval-pohostenie.jpeg" },
   { "path": "assets/images/gallery/karneval.jpeg" },
   { "path": "assets/images/gallery/nastenka.jpeg" },
-  { "path": "assets/images/gallery/nastenka copy.jpeg" }
+  { "path": "assets/images/gallery/obrazok.jpeg" },
+  { "path": "assets/images/gallery/obrazok1.jpeg" },
+  { "path": "assets/images/gallery/obrazok2.jpeg" },
+  { "path": "assets/images/gallery/obrazok3.jpeg" },
+  { "path": "assets/images/gallery/obrazok4.jpeg" },
+  { "path": "assets/images/gallery/obrazok5.jpeg" },
+  { "path": "assets/images/gallery/obrazok6.jpeg" },
+  { "path": "assets/images/gallery/obrazok7.jpeg" },
+  { "path": "assets/images/gallery/obrazok8.jpeg" },
+  { "path": "assets/images/gallery/obrazok9.jpeg" },
+  { "path": "assets/images/gallery/obrazok10.jpeg" },
+  { "path": "assets/images/gallery/obrazok11.jpeg" }
 ]
