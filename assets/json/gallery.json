@@ -1,8 +1,8 @@
 [
-  { "path": "assets/images/gallery/Dvor.jpeg" },
-  { "path": "assets/images/gallery/Hlavna budova.jpeg" },
-  { "path": "assets/images/gallery/Hracky.jpeg" },
-  { "path": "assets/images/gallery/Karneval pohostenie.jpeg" },
-  { "path": "assets/images/gallery/Karneval.jpeg" },
-  { "path": "assets/images/gallery/Nástenka.jpeg" }
+  { "path": "assets/images/gallery/dvor.jpeg" },
+  { "path": "assets/images/gallery/hlavna-budova.jpeg" },
+  { "path": "assets/images/gallery/hracky.jpeg" },
+  { "path": "assets/images/gallery/karneval-pohostenie.jpeg" },
+  { "path": "assets/images/gallery/karneval.jpeg" },
+  { "path": "assets/images/gallery/nastenka.jpeg" }
 ]
