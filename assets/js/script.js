@@ -29,10 +29,9 @@ async function loadGalleryPhotos() {
 
     allPhotos = photosData.map((item) => {
       const filename = item.path.split("/").pop();
-      const tag = filename.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
       return {
         src: item.path,
-        tag: tag,
+        tag: item.name,
         filename: filename,
       };
     });
