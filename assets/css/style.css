@@ -1,0 +1,36 @@
+:root {
+  --accent-color: #2a9d8f;
+  --accent2-color: #84c7ae;
+  --accent3-color: #7fb3d5;
+  --accent4-color: #e9c46a;
+  --primary-color: #f4a261;
+  --dark-text-color: #264653;
+  --gray-text-color: #6b7280;
+  --button-padding-x: 32px;
+  --button-padding-y: 14px;
+  --font-family-body: "Inter", sans-serif;
+  --light-text-color: #ffffff;
+  --dark-border-color: #d89570;
+  --light-border-color: #f4d5c0;
+  --font-family-heading: "Nunito", sans-serif;
+  --button-rounded-radius: 28px;
+  --dark-background-color: #264653;
+  --light-background-color: #fdf6f0;
+  --medium-background-color: #fceee3;
+  --primary-button-text-color: #ffffff;
+  --secondary-button-bg-color: transparent;
+  --secondary-button-text-color: #2a9d8f;
+  --primary-button-hover-bg-color: #e76f51;
+  --primary-button-hover-text-color: #ffffff;
+  --secondary-button-hover-bg-color: #2a9d8f;
+  --secondary-button-hover-text-color: #ffffff;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+html {
+  scroll-behavior: smooth;
+  min-height: 100svh;
+}
