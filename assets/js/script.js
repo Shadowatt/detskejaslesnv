@@ -4,12 +4,21 @@ let allPhotos = [];
 let currentPage = 1;
 let totalPages = 1;
 let currentPreviewIndex = -1;
+let activePhotos = []; // tracks which photo set (gallery or hero) is active in the preview modal
+
+// Hero slider configuration
+const heroPhotos = [
+  { src: "./assets/images/hero/hero1.jpeg", tag: "Uvodný obrázok" },
+  { src: "./assets/images/hero/hero2.jpg", tag: "Uvodný obrázok" },
+];
+let heroIndex = 0;
 
 // Initialize gallery on page load
 document.addEventListener("DOMContentLoaded", () => {
   loadGalleryPhotos();
   setupPagination();
   setupPreviewModal();
+  initHeroSlider();
 });
 
 // Load photos from JSON file
@@ -69,18 +78,22 @@ function renderGalleryPage(page) {
     const photoEl = document.createElement("div");
     photoEl.className = "group relative overflow-hidden rounded-2xl aspect-square cursor-pointer";
     photoEl.innerHTML = `
+      <div class="skeleton absolute inset-0 rounded-2xl"></div>
       <img
         src="${photo.src}"
         alt="${photo.tag}"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        onerror="this.parentElement.style.opacity='0.5'; this.parentElement.title='Unable to load image'"
+        loading="lazy"
+        decoding="async"
+        class="gallery-img relative w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        onload="this.classList.add('loaded'); const sk = this.previousElementSibling; if (sk) sk.remove();"
+        onerror="const sk = this.previousElementSibling; if (sk) sk.remove(); this.parentElement.style.opacity='0.5'; this.parentElement.title='Obrázok sa nepodarilo načítať';"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
         <span class="text-white font-medium">${photo.tag}</span>
       </div>
     `;
 
-    photoEl.addEventListener("click", () => openPreview(photo));
+    photoEl.addEventListener("click", () => openPreview(photo, allPhotos));
     container.appendChild(photoEl);
   });
 
@@ -107,20 +120,18 @@ function setupPagination() {
   // Previous button
   if (prevBtn) {
     prevBtn.addEventListener("click", () => {
-      if (currentPage > 1) {
-        renderGalleryPage(currentPage - 1);
-        updatePaginationButtons();
-      }
+      const newPage = currentPage > 1 ? currentPage - 1 : totalPages;
+      renderGalleryPage(newPage);
+      updatePaginationButtons();
     });
   }
 
   // Next button
   if (nextBtn) {
     nextBtn.addEventListener("click", () => {
-      if (currentPage < totalPages) {
-        renderGalleryPage(currentPage + 1);
-        updatePaginationButtons();
-      }
+      const newPage = currentPage < totalPages ? currentPage + 1 : 1;
+      renderGalleryPage(newPage);
+      updatePaginationButtons();
     });
   }
 
@@ -147,15 +158,15 @@ function updatePaginationButtons() {
   buttons.forEach((btn, index) => {
     // First button (prev)
     if (index === 0) {
-      btn.disabled = currentPage === 1;
-      btn.style.opacity = currentPage === 1 ? "0.5" : "1";
+      btn.disabled = false;
+      btn.style.opacity = "1";
       return;
     }
 
     // Last button (next)
     if (index === buttons.length - 1) {
-      btn.disabled = currentPage >= totalPages;
-      btn.style.opacity = currentPage >= totalPages ? "0.5" : "1";
+      btn.disabled = false;
+      btn.style.opacity = "1";
       return;
     }
 
@@ -205,12 +216,14 @@ function setupPreviewModal() {
 }
 
 // Open preview modal
-function openPreview(photo) {
+// photosArray lets the modal know which photo set is active (gallery photos or hero photos),
+// so next/prev navigation stays within the correct set.
+function openPreview(photo, photosArray = allPhotos) {
   const modal = document.getElementById("photo-preview-modal");
   if (!modal) return;
 
-  // Find the index of this photo in allPhotos
-  currentPreviewIndex = allPhotos.findIndex((p) => p.src === photo.src);
+  activePhotos = photosArray;
+  currentPreviewIndex = activePhotos.findIndex((p) => p.src === photo.src);
 
   const img = modal.querySelector("#preview-image");
   const tag = modal.querySelector("#preview-tag");
@@ -219,38 +232,21 @@ function openPreview(photo) {
   img.alt = photo.tag;
   tag.textContent = photo.tag;
 
-  // Update navigation button visibility
-  updatePreviewNavigation();
-
   modal.classList.remove("hidden");
 }
 
-// Go to next photo in preview
+// Go to next photo in preview (wraps to first after the last)
 function goToNextPhoto() {
-  if (currentPreviewIndex >= 0 && currentPreviewIndex < allPhotos.length - 1) {
-    openPreview(allPhotos[currentPreviewIndex + 1]);
-  }
+  if (activePhotos.length === 0) return;
+  currentPreviewIndex = (currentPreviewIndex + 1) % activePhotos.length;
+  openPreview(activePhotos[currentPreviewIndex], activePhotos);
 }
 
-// Go to previous photo in preview
+// Go to previous photo in preview (wraps to last after the first)
 function goToPreviousPhoto() {
-  if (currentPreviewIndex > 0) {
-    openPreview(allPhotos[currentPreviewIndex - 1]);
-  }
-}
-
-// Update preview navigation button visibility
-function updatePreviewNavigation() {
-  const prevBtn = document.getElementById("preview-prev");
-  const nextBtn = document.getElementById("preview-next");
-
-  if (prevBtn) {
-    prevBtn.style.display = currentPreviewIndex > 0 ? "flex" : "none";
-  }
-
-  if (nextBtn) {
-    nextBtn.style.display = currentPreviewIndex < allPhotos.length - 1 ? "flex" : "none";
-  }
+  if (activePhotos.length === 0) return;
+  currentPreviewIndex = (currentPreviewIndex - 1 + activePhotos.length) % activePhotos.length;
+  openPreview(activePhotos[currentPreviewIndex], activePhotos);
 }
 
 // Close preview modal
@@ -262,6 +258,34 @@ function closePreview() {
   }
 }
 
+// Hero image slider - rotates image every 5 seconds, opens preview modal on click
+function initHeroSlider() {
+  const heroImg = document.getElementById("hero-image");
+  if (!heroImg || heroPhotos.length === 0) return;
+
+  // Preload all hero images so the crossfade never shows a blank frame
+  heroPhotos.forEach((p) => {
+    const img = new Image();
+    img.src = p.src;
+  });
+
+  heroImg.addEventListener("click", () => openPreview(heroPhotos[heroIndex], heroPhotos));
+
+  if (heroPhotos.length <= 1) return;
+
+  // Respect users who prefer reduced motion - skip auto-rotation
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  setInterval(() => {
+    heroIndex = (heroIndex + 1) % heroPhotos.length;
+    heroImg.style.opacity = "0";
+    setTimeout(() => {
+      heroImg.src = heroPhotos[heroIndex].src;
+      heroImg.style.opacity = "1";
+    }, 350);
+  }, 8000);
+}
+
 // Mobile menu toggle
 document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
@@ -269,14 +293,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (mobileMenuToggle && mobileMenu) {
     mobileMenuToggle.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
+      const isOpen = mobileMenu.classList.toggle("open");
+      mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
     });
 
     // Close menu when clicking on a link
     const menuLinks = mobileMenu.querySelectorAll("a");
     menuLinks.forEach((link) => {
       link.addEventListener("click", () => {
-        mobileMenu.classList.add("hidden");
+        mobileMenu.classList.remove("open");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
       });
     });
 
@@ -285,11 +311,56 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         !mobileMenu.contains(e.target) &&
         !mobileMenuToggle.contains(e.target) &&
-        !mobileMenu.classList.contains("hidden")
+        mobileMenu.classList.contains("open")
       ) {
-        mobileMenu.classList.add("hidden");
+        mobileMenu.classList.remove("open");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
       }
     });
+  }
+});
+
+// Kopírovanie e-mailu a telefónu do schránky
+document.addEventListener("DOMContentLoaded", () => {
+  const copyButtons = document.querySelectorAll(".copy-btn");
+
+  copyButtons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const textToCopy = btn.getAttribute("data-copy");
+      if (!textToCopy) return;
+
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+      } catch (err) {
+        // Fallback pre staršie prehliadače
+        const tempInput = document.createElement("input");
+        tempInput.value = textToCopy;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+
+      const icon = btn.querySelector("i");
+      const originalClass = icon.className;
+      const originalLabel = btn.getAttribute("aria-label");
+
+      icon.className = "fa-solid fa-check text-green-500 text-sm";
+      btn.setAttribute("aria-label", "Skopírované");
+
+      setTimeout(() => {
+        icon.className = originalClass;
+        btn.setAttribute("aria-label", originalLabel);
+      }, 1500);
+    });
+  });
+});
+
+// Automatický rok v pätičke
+document.addEventListener("DOMContentLoaded", () => {
+  const yearEl = document.getElementById("current-year");
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
   }
 });
 
