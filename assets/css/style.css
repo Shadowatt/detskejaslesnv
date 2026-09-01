@@ -3,24 +3,24 @@
   --accent2-color: #84c7ae;
   --accent3-color: #7fb3d5;
   --accent4-color: #e9c46a;
-  --primary-color: #f4a261;
+  --primary-color: #669d04; /* old #f4a261 */
   --dark-text-color: #264653;
   --gray-text-color: #6b7280;
   --button-padding-x: 32px;
   --button-padding-y: 14px;
   --font-family-body: "Inter", sans-serif;
   --light-text-color: #ffffff;
-  --dark-border-color: #d89570;
-  --light-border-color: #f4d5c0;
+  --dark-border-color: #7ba33d; /* old #d89570 */
+  --light-border-color: #d9f0c4; /* old #f4d5c0 */
   --font-family-heading: "Nunito", sans-serif;
   --button-rounded-radius: 28px;
   --dark-background-color: #264653;
-  --light-background-color: #fdf6f0;
-  --medium-background-color: #fceee3;
+  --light-background-color: #f1fdf0; /* old #fdf6f0 */
+  --medium-background-color: #ebfce3; /* old #fceee3 */
   --primary-button-text-color: #ffffff;
   --secondary-button-bg-color: transparent;
   --secondary-button-text-color: #2a9d8f;
-  --primary-button-hover-bg-color: #e76f51;
+  --primary-button-hover-bg-color: #4f7a03; /* old #e76f51 */
   --primary-button-hover-text-color: #ffffff;
   --secondary-button-hover-bg-color: #2a9d8f;
   --secondary-button-hover-text-color: #ffffff;
@@ -34,4 +34,69 @@ section {
 html {
   scroll-behavior: smooth;
   min-height: 100svh;
+}
+
+/* Skeleton loading pre fotogalériu */
+.skeleton {
+  background: linear-gradient(90deg, #f0e0d0 25%, #f8ede0 37%, #f0e0d0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gallery-img {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.gallery-img.loaded {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+  .gallery-img {
+    transition: none;
+  }
+}
+
+/* Plynulý prechod mobilného menu */
+.mobile-menu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0.35s;
+}
+
+.mobile-menu.open {
+  max-height: 32rem;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu {
+    transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+  }
+  .mobile-menu.open {
+    transition: opacity 0.15s ease;
+  }
 }
