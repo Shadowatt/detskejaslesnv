@@ -8,8 +8,8 @@ let activePhotos = []; // tracks which photo set (gallery or hero) is active in 
 
 // Hero slider configuration
 const heroPhotos = [
-  { src: "./assets/images/hero/hero1.jpeg", tag: "Uvodný obrázok" },
-  { src: "./assets/images/hero/hero2.jpg", tag: "Uvodný obrázok" },
+  { src: "./assets/images/hero/hero1.jpeg", tag: "Hlavná budova" },
+  { src: "./assets/images/hero/hero2.jpg", tag: "Uvítací plagát" },
 ];
 let heroIndex = 0;
 
